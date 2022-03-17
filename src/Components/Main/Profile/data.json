@@ -1,0 +1,32 @@
+[
+    {
+        "subject": "Matematika",
+        "tests": 80,
+        "time": 60,
+        "tyr": 1
+    },
+    {
+        "subject": "Fizika",
+        "tests": 80,
+        "time": 60,
+        "tyr": 1
+    },
+    {
+        "subject": "Rus tili",
+        "tests": 80,
+        "time": 60,
+        "tyr": 1
+    },
+    {
+        "subject": "English",
+        "tests": 80,
+        "time": 60,
+        "tyr": 1
+    },
+    {
+        "subject": "Geografiya",
+        "tests": 80,
+        "time": 60,
+        "tyr": 1
+    }
+]
