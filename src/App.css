@@ -43,6 +43,16 @@
   border-radius: 50%;
   animation: button-loading-spinner 1s ease infinite;
 }
+.error {
+  color: red;
+  margin: 4px 0;
+  font-size: 14px;
+}
+.error-input {
+  position: absolute;
+  top: 35px;
+  left: 20px;
+}
 
 /* animation button */
 @keyframes button-loading-spinner {
@@ -84,7 +94,6 @@
 
 .form {
   width: 40%;
-  height: 100%;
   background-color: rgba(255, 255, 255, 0.75);
   padding-top: 150px;
   color: #060d1f;
@@ -109,6 +118,10 @@
   margin-bottom: 40px;
   align-items: center;
   position: relative;
+}
+
+.form span {
+  display: block;
 }
 
 .form label {
@@ -181,6 +194,19 @@
   font-size: 20px;
   font-weight: 600;
   text-align: center;
+  background-color: #f1f1f1;
+}
+
+p.error-face {
+  /* color: #ff9494 !important; */
+  height: 25px;
+  margin-bottom: 5px;
+  padding: 2px 5px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: 0.3s ease;
+
+  background-color: #ff9494;
 }
 
 /* Loading spinner stillari */

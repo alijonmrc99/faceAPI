@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Subject from "./Subject";
-import data from "./data.json";
 import axios from "../../../hooks/axios";
 import { useCookies } from "react-cookie";
 

@@ -4,6 +4,7 @@ import logo from "../../img/logo.png";
 import userIcon from "../../img/icon/user.png";
 import lockIcon from "../../img/icon/lock.png";
 import { useForm } from "../../hooks/useForm";
+import { useState, useEffect, useRef } from "react";
 
 function Login() {
   // Fromaning odatiy qiymatlari
@@ -13,8 +14,10 @@ function Login() {
   };
 
   const [data, setData] = useForm(initialValue);
+  const [formErrors, setFormErrors] = useState({});
+  const submitBtn = useRef();
+  const [isSubmit, setIsSubmit] = useState(false);
   const redirect = useNavigate();
-
   // animatsiya funksiyalari -----------------
 
   function handleTop(e) {
@@ -26,21 +29,55 @@ function Login() {
       e.target.previousElementSibling.classList.remove("labelActive");
   }
   // ------------------------------------------
+  useEffect(() => {
+    console.log(formErrors);
 
-  async function HandleSubmit(e) {
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+      submitBtn.current.classList.add("button--loading");
+      axios
+        .post("/login", data, {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          localStorage.setItem("data", JSON.stringify(res.data.data));
+          localStorage.setItem("user", JSON.stringify(data));
+          redirect("/login/faceid");
+        })
+        .catch((e) => {
+          submitBtn.current.classList.remove("button--loading");
+          if (e.response.status === 401) {
+            setFormErrors({ notFound: "Bunday foydalanuvchi yo'q" });
+          }
+          console.log();
+        });
+    }
+  }, [formErrors]);
+
+  function emailValidation(data) {
+    const errors = {};
+    const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/gi;
+
+    if (!data.email) {
+      errors.email = "Email bo'sh bo'lmasin!!!";
+    } else if (!pattern.test(data.email)) {
+      errors.email = "Emailni to'g'ri kirting";
+    }
+    if (!data.password) {
+      errors.password = "Parol bo'sh bo'lmasin!!!";
+    } else if (data.password.length < 6) {
+      errors.password = "Parol 6 belgidan kam bo'lmasin";
+    }
+
+    return errors;
+  }
+
+  function HandleSubmit(e) {
     e.preventDefault();
+    setFormErrors(emailValidation(data));
+    setIsSubmit(true);
 
-    e.target.lastElementChild.classList.add("button--loading");
-
-    axios
-      .post("/login", data, {
-        "Content-Type": "application/json",
-      })
-      .then((res) => {
-        localStorage.setItem("data", JSON.stringify(res.data.data));
-        localStorage.setItem("user", JSON.stringify(data));
-        redirect("/login/faceid");
-      });
+    console.log("ketti");
+    // e.target.lastElementChild;
   }
 
   return (
@@ -54,7 +91,7 @@ function Login() {
           <h2>Login</h2>
           <div className="input">
             <img src={userIcon} alt="UserIcon" />
-            <label htmlFor="username">Loginni kirting</label>
+            <label htmlFor="username">Loginni kirting </label>
             <input
               onBlur={handlePut}
               onFocus={handleTop}
@@ -68,6 +105,7 @@ function Login() {
               type="text"
               autoComplete="off"
             />
+            <span className="error-input">{formErrors.email}</span>
           </div>
 
           <div className="input">
@@ -86,11 +124,12 @@ function Login() {
               type="password"
               autoComplete="off"
             />
+            <span className="error-input">{formErrors.password}</span>
           </div>
-
-          <button type="submit" className="btn btn-form">
+          <button ref={submitBtn} type="submit" className="btn btn-form">
             Yuborish
           </button>
+          <p className="error">{formErrors.notFound}</p>
         </form>
       </div>
     </div>

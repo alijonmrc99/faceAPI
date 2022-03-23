@@ -8,19 +8,17 @@ import axios from "../../hooks/axios";
 const Header = () => {
   const [cookie, , removeCookie] = useCookies();
   function logOut() {
+    removeCookie("userId");
     console.log(`Bearer ${cookie.userId}`);
-    axios
-      .post(
-        "/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${cookie.userId}`,
-          },
-        }
-      )
-      .then(removeCookie("userId"))
-      .catch((err) => console.log(err));
+    axios.post(
+      "/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${cookie.userId}`,
+        },
+      }
+    );
   }
   return (
     <div className="container header">

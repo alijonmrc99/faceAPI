@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
 import logo from "../../img/logo.png";
-import data from "./data.json";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import axios from "../../hooks/axios";
@@ -12,6 +11,7 @@ function FaceID() {
   const [initalizing, setInitalizing] = useState(false);
   const videoRef = useRef();
   const canvasRef = useRef();
+  const msgError = useRef();
   const navigate = useNavigate();
   const [, setCookies] = useCookies();
   const [body] = useState(JSON.parse(localStorage.getItem("user")));
@@ -32,23 +32,19 @@ function FaceID() {
   }, []);
 
   const startVideo = () => {
-    navigator.getUserMedia(
-      {
+    navigator.mediaDevices
+      .getUserMedia({
         video: {},
-      },
-      (stream) => (videoRef.current.srcObject = stream),
-      (e) => {
-        console.log(e);
-      }
-    );
+      })
+      .then((stream) => (videoRef.current.srcObject = stream))
+      .catch((e) => console.error(e));
   };
 
   const handlePlay = async () => {
     if (initalizing) setInitalizing(false);
     const labeledFaceDescriptors = await loadLabeledImages();
-    console.log(labeledFaceDescriptors);
+
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.45);
-    console.log(faceMatcher);
 
     canvasRef.current.innerHTML = faceapi.createCanvasFromMedia(
       videoRef.current
@@ -67,8 +63,6 @@ function FaceID() {
         .withFaceLandmarks()
         .withFaceDescriptors();
 
-      // console.log();
-
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
       canvasRef.current
@@ -76,7 +70,6 @@ function FaceID() {
         .clearRect(0, 0, videoWidth, videoHeight);
 
       const results = resizedDetections.map((d) => {
-        // console.log(d.descriptor);
         return faceMatcher.findBestMatch(d.descriptor);
       });
 
@@ -94,15 +87,28 @@ function FaceID() {
     const checkLoop = setInterval(detectFace, 500);
 
     let whoAY = {};
+    whoAY["error"] = 0;
     function checkFace(results) {
-      console.log(results[0].label);
-      if (results[0].label !== "unknown") {
-        whoAY[results[0].label] = !whoAY[results[0].label]
-          ? 1
-          : ++whoAY[results[0].label];
-        // console.log(whoAY);
+      // yuz yoqligini aniqlash ------------------
+      if (results[0] === undefined) {
+        handleErrors("notFace");
+      } else {
+        // yuz bor bo'lsa uni tekshitish ----------
+
+        msgError.current.style.opacity = "0";
+        msgError.current.innerHTML = "";
+
+        if (results[0].label !== "unknown") {
+          whoAY[results[0].label] = !whoAY[results[0].label]
+            ? 1
+            : ++whoAY[results[0].label];
+        } else whoAY["error"] = ++whoAY["error"];
+
+        if (whoAY["error"] == 10) {
+          handleErrors("lying");
+        }
+
         if (whoAY[results[0].label] === 10) {
-          console.log(`Siz ${results[0].label}`);
           videoRef.current.srcObject
             .getTracks()
             .forEach((track) => track.stop());
@@ -114,14 +120,29 @@ function FaceID() {
 
           // Set user token function
           putCookie(results[0].label);
-          setInitalizing(true);
         }
+      }
+    }
+
+    // Errolarni tutib olish ----------------------------
+
+    function handleErrors(e) {
+      msgError.current.style.opacity = "1";
+      if (e === "lying") {
+        msgError.current.innerHTML = "Bizni aldamang";
+        setTimeout(() => navigate("/login"), 2000);
+        clearInterval(checkLoop);
+        localStorage.removeItem("data");
+        localStorage.removeItem("user");
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
+      if (e === "notFace") {
+        msgError.current.innerHTML = "Yuzni aniqlomayabman kamerani tekshiring";
       }
     }
 
     // Set cookie
     function putCookie(face_token) {
-      console.log({ ...body, face_token });
       axios
         .post(
           "/login/face",
@@ -136,20 +157,19 @@ function FaceID() {
           setCookies("userId", res.data.data.token, { path: "/", expires: d });
 
           navigate("/login");
-          console.log(res.data.data.token);
         });
     }
   };
 
   async function loadLabeledImages() {
-    data = JSON.parse(localStorage.getItem("data"));
+    const data = JSON.parse(localStorage.getItem("data"));
     return Promise.all(
       data.map((item) => {
         const des1 = item.description.map(
           (face) => new Float32Array(Object.values(face))
         );
         // const des2 = new Float32Array(Object.values(item.descriptors[1]));
-        console.log(des1);
+
         return new faceapi.LabeledFaceDescriptors(
           item.face_token.toString(),
           des1
@@ -165,7 +185,7 @@ function FaceID() {
       </header>
       <main className="main">
         <h2>Face ID</h2>
-
+        <p className="error-face" ref={msgError}></p>
         <div className="video-container">
           <div height={videoHeight} width={videoWidth} className={`face-cont`}>
             <div className={`lds-roller ${initalizing ? "view" : "noview"}`}>
@@ -178,6 +198,7 @@ function FaceID() {
             <canvas ref={canvasRef}></canvas>
           </div>
         </div>
+
         <p>Dastur sizning kimligingizni tekshirmoqda iltimos kameraga qarang</p>
       </main>
     </div>
