@@ -104,7 +104,7 @@ function FaceID() {
             : ++whoAY[results[0].label];
         } else whoAY["error"] = ++whoAY["error"];
 
-        if (whoAY["error"] == 10) {
+        if (whoAY["error"] === 10) {
           handleErrors("lying");
         }
 

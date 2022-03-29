@@ -1,11 +1,11 @@
 import React from "react";
 import { useCookies } from "react-cookie";
 import logo from "../../img/logo.png";
-import userImg from "../../img/icon/userimg.png";
+import userImg from "../../img/icon/userimg.jpg";
 import logout from "../../img/icon/logout.png";
 import axios from "../../hooks/axios";
 
-const Header = () => {
+const Header = ({ user, loading }) => {
   const [cookie, , removeCookie] = useCookies();
   function logOut() {
     removeCookie("userId");
@@ -28,9 +28,11 @@ const Header = () => {
       <div className="user">
         <h1>
           <div className="img">
-            <img src={userImg} alt="user-img" />
+            <img src={user.photo || userImg} alt="user-img" />
           </div>
-          <span>Kuvondikov Alijon</span>
+          <span>
+            {user.first_name} {user.last_name}
+          </span>
         </h1>
         <div className="exit" onClick={logOut}>
           <img src={logout} alt="log out" />

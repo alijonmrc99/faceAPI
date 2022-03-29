@@ -4,6 +4,7 @@
   padding: 0;
   list-style: none;
   text-decoration: none;
+  box-sizing: border-box;
 }
 .container {
   padding: 30px 50px;
@@ -14,7 +15,7 @@
   border: none;
   font-family: inherit;
   color: #f1f1f1;
-  position: relative;
+  /* position: relative; */
 }
 
 .btn-form {
@@ -25,8 +26,21 @@
   font-weight: 600;
   background-color: #736ced;
 }
+
+.btn-danger {
+  background-color: red;
+  margin-top: 15px;
+}
+
 .button--loading {
   color: transparent;
+}
+
+.nothing {
+  text-align: center;
+  font-weight: 500;
+  font-size: 20px;
+  margin: 30px 0;
 }
 .button--loading::after {
   content: "";
@@ -355,12 +369,12 @@ p.error-face {
 }
 
 .user .img img {
-  width: 80%;
+  width: 100%;
 }
 
 /* Navbar uchun stillar */
 .nav {
-  width: 35px;
+  width: 60px;
   transition: width 0.3s ease;
   padding: 10px 13px 10px 10px;
   overflow: hidden;
@@ -433,7 +447,7 @@ p.error-face {
 }
 
 .card {
-  width: 260px;
+  width: 330px;
   /* max-width: 290px;
   min-width: 200px; */
   background-color: #fff;
@@ -478,4 +492,191 @@ p.error-face {
   text-align: center;
   padding: 10px 0;
   color: #f1f1f1;
+}
+
+/* settings */
+
+.settings li {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* sovle page uchun stillar */
+.solve {
+  display: flex;
+}
+
+.left {
+  width: 100%;
+  margin-right: 30px;
+  position: relative;
+}
+
+.left > div {
+  padding: 20px 25px;
+  background-color: #fff;
+  margin-bottom: 11px;
+  font-weight: 500;
+}
+
+.left p {
+  margin-bottom: 16px;
+}
+
+.left input[type="text"] {
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  border-bottom: 1px solid #20b171;
+  outline: none;
+  display: block;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.single ul {
+  margin-left: 10px;
+}
+
+.single li div {
+  margin-bottom: 10px;
+}
+
+.single input[type="radio"] {
+  margin-right: 10px;
+  display: none;
+}
+
+.single input[type="radio"]:checked + label::before {
+  background-color: #20b171;
+  border: 1px solid #20b171;
+}
+
+.single label {
+  position: relative;
+  margin-left: 25px;
+}
+.single label::before {
+  content: "";
+  position: absolute;
+  transition: 0.3s ease;
+  left: -25px;
+  top: 2px;
+  border: 1px solid #060d1f;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  /* background-color: s#20b171; */
+}
+
+.alert {
+  position: fixed;
+  left: 50%;
+  width: 30vw;
+  min-width: 300px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  opacity: 0;
+}
+
+@media screen and (min-width: 1121px) {
+  .btn-danger {
+    margin-left: 15px;
+  }
+}
+
+@media screen and (min-width: 1021px) {
+  .btn-danger {
+    margin-left: 15px;
+  }
+}
+.viewAlert {
+  pointer-events: all;
+  animation-duration: 0.75s;
+
+  opacity: 1;
+  animation-name: bounceIn;
+  animation-fill-mode: forwards;
+}
+
+@keyframes bounceIn {
+  0%,
+  20%,
+  40%,
+  60%,
+  80%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale3d(0.3, 0.3, 0.3);
+  }
+  20% {
+    transform: translate(-50%, -50%) scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale3d(0.9, 0.9, 0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: translate(-50%, -50%) scale3d(0.97, 0.97, 0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+}
+
+.right {
+  width: 370px;
+  /* height: 100px; */
+  padding: 18px 20px 0;
+  background-color: #fff;
+}
+
+.right .timelimit {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.right .dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dots span {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 500;
+  border: 1px solid #060d1f;
+  transition: 0.3s ease;
+}
+
+.dots .hovered {
+  background-color: #20b171;
+  color: #f1f1f1;
+  border: none;
+}
+
+.dots span:nth-child(7n) {
+  margin-right: 0;
 }

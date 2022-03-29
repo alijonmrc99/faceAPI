@@ -10,18 +10,23 @@ import Main from "./Components/Main/Profile/Main";
 import Tests from "./Components/Main/Profile/Tests";
 import Results from "./Components/Main/Profile/Resuls";
 import Settings from "./Components/Main/Profile/Settings";
+import Solve from "./Components/Main/Profile/Solve";
+import Innertest from "./Components/Main/Profile/InnerTest";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/" element={<InnerContent />}>
-          <Route path="/" element={<Navigate replace to="home" />} />
+          <Route index element={<Navigate replace to="home" />} />
           <Route path="home" element={<Home />}>
             <Route path="/home" element={<Main />} />
-            <Route path="/home/tests" element={<Tests />} />
-            <Route path="/home/result" element={<Results />} />
-            <Route path="/home/settins" element={<Settings />} />
+            <Route path="tests" element={<Innertest />}>
+              <Route index element={<Tests />} />
+              <Route path=":id" element={<Solve />} />
+            </Route>
+            <Route path="result" element={<Results />} />
+            <Route path="settins" element={<Settings />} />
           </Route>
         </Route>
       </Route>
