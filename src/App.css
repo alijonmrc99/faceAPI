@@ -15,7 +15,7 @@
   border: none;
   font-family: inherit;
   color: #f1f1f1;
-  /* position: relative; */
+  position: relative;
 }
 
 .btn-form {
@@ -421,7 +421,7 @@ p.error-face {
 
 .main h1 {
   font-size: 28px;
-  border-bottom: 1px solid#D6D6D9;
+  border-bottom: 1px solid #D6D6D9;
   padding-bottom: 7px;
   margin-bottom: 50px;
 }
@@ -584,7 +584,7 @@ p.error-face {
   opacity: 0;
 }
 
-@media screen and (min-width: 1121px) {
+@media screen and (min-width: 1173px) {
   .btn-danger {
     margin-left: 15px;
   }
@@ -671,7 +671,7 @@ p.error-face {
   transition: 0.3s ease;
 }
 
-.dots .hovered {
+.dots .fill {
   background-color: #20b171;
   color: #f1f1f1;
   border: none;
@@ -679,4 +679,37 @@ p.error-face {
 
 .dots span:nth-child(7n) {
   margin-right: 0;
+}
+/* no match no page */
+.nomatch {
+  background-image: url("./img/nopage.png");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center 0;
+  /* background-size: 50%; */
+  text-align: center;
+}
+
+.nomatch p {
+  margin-top: 50px;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.btn-nomatch {
+  background-color: #20b171;
+  padding: 15px 25px;
+  border-radius: 10px;
+  display: inline-block;
+  position: absolute;
+  color: #fff;
+  font-weight: 500;
+  bottom: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bottom {
+  bottom: 20%;
 }

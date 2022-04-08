@@ -29,6 +29,7 @@ function InnerContent() {
       })
       .catch((err) => {
         console.log(err);
+        console.log(err.response.status);
       });
 
     // quizlarni olish uchun so'rov
@@ -44,7 +45,7 @@ function InnerContent() {
         setLoad(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.status);
       });
   }, []);
 

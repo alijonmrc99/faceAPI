@@ -14,7 +14,9 @@ const Solve = () => {
   const [getResult, setGetResult] = useState(true);
   const [answerData, setAnswerData] = useState([]);
   const [timeLimit, setTimeLimit] = useState(0);
+  const [quizzes, setQuizzes] = useState([]);
   const redirect = useNavigate();
+  let myInterval;
 
   useEffect(() => {
     setLoad(true);
@@ -26,34 +28,65 @@ const Solve = () => {
       })
       .then((res) => {
         setData(res.data);
-        setTimeLimit(res.data?.data?.take?.quiz?.time_limit * 60);
-        // setTimeLimit(20);
+        const now = Date.now();
+        const end = Date.parse(res.data?.data?.take?.ends_at);
+        setTimeLimit(Math.floor((end - now) / 1000));
+
+        setQuizzes(() =>
+          Object.values(res.data.data.questions).map((item, index) => {
+            console.log(item);
+            const quiz = {
+              quizId: item.id,
+            };
+            quiz[index] = false;
+            return quiz;
+          })
+        );
         console.log(res.data);
       })
       .catch((err) => {
-        setData(err);
+        if (err.response?.status === 403) {
+          redirect("/home/403");
+        }
+
+        if (err.response?.status === 404) {
+          redirect("/home/403");
+        }
       })
       .finally(() => {
         setLoad(false);
       });
+
+    return {};
   }, []);
 
   useEffect(() => {
-    let myInterval = setInterval(() => {
-      if (timeLimit > 0) {
-        setTimeLimit(timeLimit - 1);
-      }
-      if (timeLimit === 0) {
-        handleSubmit();
-        clearInterval(myInterval);
-      }
-    }, 1000);
+    myInterval = setInterval(timer, 1000);
+
     return () => {
       clearInterval(myInterval);
     };
   });
 
-  function handlechange(e) {
+  const timer = () => {
+    if (timeLimit !== 0 && timeLimit > 0) {
+      setTimeLimit(timeLimit - 1);
+    }
+    if (timeLimit <= 0) {
+      // handleSubmit("hard");
+      redirect("/");
+      clearInterval(myInterval);
+    }
+  };
+
+  function handlechange(e, index, qId) {
+    console.log(quizzes);
+    quizzes.map((item) => {
+      if (item.quizId === qId && e.target.value.length !== 0)
+        return (item[index] = true);
+      if (e.target.value.length === 0) return (item[index] = false);
+    });
+
     setAnswerData({
       ...answerData,
       [e.target.name]: e.target.value,
@@ -61,9 +94,10 @@ const Solve = () => {
   }
 
   // Natijani tekshirish va tekshirishga tayyorlash
-  function handleSubmit() {
+  async function handleSubmit(submit = "") {
     let sendAnswers = [];
-    sendAnswers = Object.keys(answerData).map((item) => {
+
+    sendAnswers = Object.keys(answerData)?.map((item) => {
       if (!isNaN(+answerData[item]))
         return {
           answer_id: answerData[item],
@@ -76,32 +110,47 @@ const Solve = () => {
         };
     });
     // Natijani tekshirish
-    setResLoad(true);
-    setGetResult(false);
-    axios
-      .post(
-        `/quizzes/${id}/finish`,
-        JSON.stringify({
-          take_id: data.data.take.id,
-          answers: sendAnswers,
-        }),
-        {
-          headers: {
-            Authorization: `Bearer ${cookie.userId}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        setRes(res.data.data);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        setData(err.response.status);
-      })
-      .finally(() => {
-        setResLoad(false);
-      });
+
+    if (sendAnswers.length > 0 || submit === "hard") {
+      setResLoad(true);
+      setGetResult(false);
+      verifyBtn.current.classList.add("viewAlert");
+      axios
+        .post(
+          `/quizzes/${id}/finish`,
+          JSON.stringify({
+            take_id: data?.data?.take?.id,
+            answers: sendAnswers,
+          }),
+          {
+            headers: {
+              Authorization: `Bearer ${cookie.userId}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setRes(res.data.data);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          setData(err.response.status);
+        })
+        .finally(() => {
+          setResLoad(false);
+          console.log(data?.data?.take?.id);
+          console.log({
+            take_id: data?.data?.take?.id,
+            answers: sendAnswers,
+          });
+
+          // goHome();
+        });
+    } else {
+      alert("Testni ishlang avval");
+      verifyBtn.current.classList.remove("viewAlert");
+    }
+    // clearInterval(myInterval);
   }
 
   function handleClick() {
@@ -123,14 +172,21 @@ const Solve = () => {
         <div className="left">
           {load ? (
             <p>Loading...</p>
+          ) : data?.data?.questions.length === 0 ? (
+            <p>Hech qanday test yoq</p>
           ) : (
             <>
-              {data?.data?.questions?.map((test) =>
+              {data?.data?.questions?.map((test, index) =>
                 test.type_id === 1 ? (
-                  <div key={test.id} className="single">
+                  <div
+                    // onClick={() => setQuiz(index)}
+                    data-id={index}
+                    key={test.id}
+                    className="single"
+                  >
                     <p>{test.content}</p>
                     <ul>
-                      <li onChange={handlechange}>
+                      <li onChange={(e) => handlechange(e, index, test.id)}>
                         {test.answers.map((answer) => (
                           <div key={answer.id}>
                             <input
@@ -148,7 +204,11 @@ const Solve = () => {
                     </ul>
                   </div>
                 ) : (
-                  <div onChange={handlechange} key={test.id} className="text">
+                  <div
+                    onChange={(e) => handlechange(e, index, test.id)}
+                    key={test.id}
+                    className="text"
+                  >
                     <p>{test.content}</p>
                     <input className="input" name={test.id} type="text" />
                   </div>
@@ -182,7 +242,7 @@ const Solve = () => {
                     ) : (
                       <p>
                         Tabrilamiz siz {data?.data?.questions?.length} ta
-                        savoldan {res.correct_answers} ta ishladingiz{" "}
+                        savoldan {res?.correct_answers} ta ishladingiz{" "}
                       </p>
                     )}
                     <button onClick={goHome} className="btn btn-test">
@@ -204,8 +264,10 @@ const Solve = () => {
                 {timeLimit % 60} sek
               </p>
               <div className="dots">
-                {data?.data?.questions?.map((item) => (
-                  <span key={item.id}>1</span>
+                {quizzes?.map((item, index) => (
+                  <span className={item[index] ? "fill" : ""} key={index}>
+                    {index + 1}
+                  </span>
                 ))}
               </div>
             </>

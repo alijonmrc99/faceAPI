@@ -12,6 +12,7 @@ import Results from "./Components/Main/Profile/Resuls";
 import Settings from "./Components/Main/Profile/Settings";
 import Solve from "./Components/Main/Profile/Solve";
 import Innertest from "./Components/Main/Profile/InnerTest";
+import Nomatch from "./Components/Nomatch";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
             </Route>
             <Route path="result" element={<Results />} />
             <Route path="settins" element={<Settings />} />
+            <Route path="404" element={<Nomatch status={404} />} />
+            <Route path="403" element={<Nomatch status={403} />} />
           </Route>
         </Route>
       </Route>
@@ -35,7 +38,7 @@ function App() {
         <Route path="/login/faceid" element={<FaceID />} />
       </Route>
 
-      <Route path="*" element={<p>Page not found</p>} />
+      <Route path="*" element={<Nomatch status={404} />} />
     </Routes>
   );
 }
