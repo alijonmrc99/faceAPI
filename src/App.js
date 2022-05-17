@@ -13,6 +13,7 @@ import Settings from "./Components/Main/Profile/Settings";
 import Solve from "./Components/Main/Profile/Solve";
 import Innertest from "./Components/Main/Profile/InnerTest";
 import Nomatch from "./Components/Nomatch";
+import Showres from "./Components/Main/Profile/ShowRes";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="tests" element={<Innertest />}>
               <Route index element={<Tests />} />
               <Route path=":id" element={<Solve />} />
+              <Route path="showres" element={<Showres />} />
             </Route>
             <Route path="result" element={<Results />} />
             <Route path="settins" element={<Settings />} />

@@ -505,10 +505,12 @@ p.error-face {
 /* sovle page uchun stillar */
 .solve {
   display: flex;
+  position: relative;
+  align-items: flex-start;
 }
 
 .left {
-  width: 100%;
+  width: calc(100% -  370px);
   margin-right: 30px;
   position: relative;
 }
@@ -556,6 +558,7 @@ p.error-face {
 .single label {
   position: relative;
   margin-left: 25px;
+  cursor: pointer;  
 }
 .single label::before {
   content: "";
@@ -582,6 +585,14 @@ p.error-face {
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
   pointer-events: none;
   opacity: 0;
+}
+
+/* natijani ko'rish oynasi */
+
+.show-result{
+  font-size: 20px;
+  text-align: center;
+  font-weight: 500;
 }
 
 @media screen and (min-width: 1173px) {
@@ -639,6 +650,10 @@ p.error-face {
 
 .right {
   width: 370px;
+  position: sticky;
+  /* right: ; */
+  top: 50px;
+  /* height: 0; */
   /* height: 100px; */
   padding: 18px 20px 0;
   background-color: #fff;
@@ -658,8 +673,8 @@ p.error-face {
 }
 
 .dots span {
-  width: 25px;
-  height: 25px;
+  width: 27px;
+  height: 27px;
   margin-right: 10px;
   margin-bottom: 15px;
   display: flex;
@@ -667,6 +682,7 @@ p.error-face {
   justify-content: center;
   border-radius: 50%;
   font-weight: 500;
+  font-size: 14px;
   border: 1px solid #060d1f;
   transition: 0.3s ease;
 }
@@ -677,9 +693,9 @@ p.error-face {
   border: none;
 }
 
-.dots span:nth-child(7n) {
+/* .dots span:nth-child(7n) {
   margin-right: 0;
-}
+} */
 /* no match no page */
 .nomatch {
   background-image: url("./img/nopage.png");

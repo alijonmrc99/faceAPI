@@ -6,14 +6,13 @@ import { useCookies } from "react-cookie";
 const Solve = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
-  const [res, setRes] = useState(null);
   const [resLoad, setResLoad] = useState(false);
   const [load, setLoad] = useState(false);
   const [cookie] = useCookies();
   const verifyBtn = useRef();
   const [getResult, setGetResult] = useState(true);
   const [answerData, setAnswerData] = useState([]);
-  const [timeLimit, setTimeLimit] = useState(0);
+  const [timeLimit, setTimeLimit] = useState(-1);
   const [quizzes, setQuizzes] = useState([]);
   const redirect = useNavigate();
   let myInterval;
@@ -34,7 +33,6 @@ const Solve = () => {
 
         setQuizzes(() =>
           Object.values(res.data.data.questions).map((item, index) => {
-            console.log(item);
             const quiz = {
               quizId: item.id,
             };
@@ -61,26 +59,21 @@ const Solve = () => {
   }, []);
 
   useEffect(() => {
-    myInterval = setInterval(timer, 1000);
+    myInterval = setInterval(() => {
+      if (timeLimit !== 0 && timeLimit > 0) {
+        setTimeLimit(timeLimit - 1);
+      }
+      if (timeLimit === 0) {
+        handleSubmit("hard");
+      }
+    }, 1000);
 
     return () => {
       clearInterval(myInterval);
     };
   });
 
-  const timer = () => {
-    if (timeLimit !== 0 && timeLimit > 0) {
-      setTimeLimit(timeLimit - 1);
-    }
-    if (timeLimit <= 0) {
-      // handleSubmit("hard");
-      redirect("/");
-      clearInterval(myInterval);
-    }
-  };
-
   function handlechange(e, index, qId) {
-    console.log(quizzes);
     quizzes.map((item) => {
       if (item.quizId === qId && e.target.value.length !== 0)
         return (item[index] = true);
@@ -94,7 +87,7 @@ const Solve = () => {
   }
 
   // Natijani tekshirish va tekshirishga tayyorlash
-  async function handleSubmit(submit = "") {
+  function handleSubmit(submit) {
     let sendAnswers = [];
 
     sendAnswers = Object.keys(answerData)?.map((item) => {
@@ -130,21 +123,13 @@ const Solve = () => {
           }
         )
         .then((res) => {
-          setRes(res.data.data);
-          console.log(res.data);
+          localStorage.setItem("result", JSON.stringify(res.data.data));
         })
         .catch((err) => {
           setData(err.response.status);
         })
         .finally(() => {
           setResLoad(false);
-          console.log(data?.data?.take?.id);
-          console.log({
-            take_id: data?.data?.take?.id,
-            answers: sendAnswers,
-          });
-
-          // goHome();
         });
     } else {
       alert("Testni ishlang avval");
@@ -178,13 +163,8 @@ const Solve = () => {
             <>
               {data?.data?.questions?.map((test, index) =>
                 test.type_id === 1 ? (
-                  <div
-                    // onClick={() => setQuiz(index)}
-                    data-id={index}
-                    key={test.id}
-                    className="single"
-                  >
-                    <p>{test.content}</p>
+                  <div data-id={index} key={test.id} className="single">
+                    <p>{index + 1 + ". " + test.content}</p>
                     <ul>
                       <li onChange={(e) => handlechange(e, index, test.id)}>
                         {test.answers.map((answer) => (
@@ -222,6 +202,7 @@ const Solve = () => {
                 Yuborish
               </button>
               <div ref={verifyBtn} className="alert">
+                {/* {console.log(getResult)} */}
                 {getResult ? (
                   <>
                     <p>Rostdan ham toshirasizmi?</p>
@@ -240,14 +221,8 @@ const Solve = () => {
                     {resLoad ? (
                       <p>Loading ...</p>
                     ) : (
-                      <p>
-                        Tabrilamiz siz {data?.data?.questions?.length} ta
-                        savoldan {res?.correct_answers} ta ishladingiz{" "}
-                      </p>
+                      redirect("/home/tests/showres")
                     )}
-                    <button onClick={goHome} className="btn btn-test">
-                      qatish
-                    </button>
                   </div>
                 )}
               </div>
